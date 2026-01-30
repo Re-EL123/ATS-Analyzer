@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ATS-Friendly CV Analyzer</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gray-50: #f9fafb;
+            --gray-100: #f3f4f6;
+            --gray-200: #e5e7eb;
+            --gray-300: #d1d5db;
+            --gray-600: #4b5563;
+            --gray-700: #374151;
+            --gray-900: #111827;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: var(--gray-900);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            margin-bottom: 24px;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--gray-300);
+            border-radius: 12px;
+            padding: 48px 24px;
+            text-align: center;
+            transition: all 0.3s;
+            cursor: pointer;
+            background: var(--gray-50);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: #eff6ff;
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary);
+            background: #dbeafe;
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            color: var(--gray-400);
+        }
+
+        .upload-text {
+            font-size: 1.2rem;
+            color: var(--gray-700);
+            margin-bottom: 8px;
+        }
+
+        .upload-hint {
+            color: var(--gray-600);
+            font-size: 0.9rem;
+        }
+
+        input[type="file"] {
+            display: none;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+        }
+
+        .btn:disabled {
+            background: var(--gray-300);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .processing {
+            display: none;
+            text-align: center;
+            padding: 32px;
+        }
+
+        .spinner {
+            border: 4px solid var(--gray-200);
+            border-top: 4px solid var(--primary);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .results {
+            display: none;
+        }
+
+        .score-circle {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 32px;
+            position: relative;
+            background: conic-gradient(var(--score-color) calc(var(--score) * 1%), var(--gray-200) 0);
+        }
+
+        .score-circle::before {
+            content: '';
+            position: absolute;
+            width: 160px;
+            height: 160px;
+            border-radius: 50%;
+            background: white;
+        }
+
+        .score-value {
+            font-size: 3rem;
+            font-weight: 700;
+            z-index: 1;
+            color: var(--gray-900);
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            z-index: 1;
+        }
+
+        .score-rating {
+            text-align: center;
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 32px;
+        }
+
+        .category-breakdown {
+            display: grid;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .category {
+            background: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .category-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .category-name {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .category-score {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .progress-bar {
+            background: var(--gray-200);
+            height: 8px;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            transition: width 0.5s ease;
+        }
+
+        .issues-list {
+            margin-top: 8px;
+        }
+
+        .issue {
+            background: white;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 8px;
+            border-left: 3px solid var(--warning);
+        }
+
+        .issue-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: var(--gray-900);
+        }
+
+        .issue-description {
+            font-size: 0.9rem;
+            color: var(--gray-600);
+            margin-bottom: 4px;
+        }
+
+        .issue-recommendation {
+            font-size: 0.9rem;
+            color: var(--primary);
+            font-weight: 500;
+        }
+
+        .section-analysis {
+            margin-top: 32px;
+        }
+
+        .section-card {
+            background: var(--gray-50);
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .section-title {
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .section-status {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+
+        .status-good {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .status-warning {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-poor {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .keyword-analysis {
+            margin-top: 32px;
+        }
+
+        .keyword-section {
+            margin-bottom: 24px;
+        }
+
+        .keyword-section h3 {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--gray-700);
+        }
+
+        .keyword-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .keyword-tag {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .keyword-matched {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .keyword-missing {
+            background: #fee2e2;
+            color: #991b1b;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 32px;
+            justify-content: center;
+        }
+
+        .btn-secondary {
+            background: white;
+            color: var(--primary);
+            border: 2px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        .job-description-section {
+            margin-top: 24px;
+            padding: 20px;
+            background: var(--gray-50);
+            border-radius: 8px;
+        }
+
+        .job-description-section h3 {
+            margin-bottom: 12px;
+            color: var(--gray-700);
+        }
+
+        textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--gray-300);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 0.95rem;
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .tip-box {
+            background: #eff6ff;
+            border-left: 4px solid var(--primary);
+            padding: 16px;
+            border-radius: 6px;
+            margin-top: 24px;
+        }
+
+        .tip-box h4 {
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .tip-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .tip-list li {
+            padding: 4px 0;
+            padding-left: 24px;
+            position: relative;
+        }
+
+        .tip-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+
+            .card {
+                padding: 20px;
+            }
+
+            .score-circle {
+                width: 160px;
+                height: 160px;
+            }
+
+            .score-circle::before {
+                width: 130px;
+                height: 130px;
+            }
+
+            .score-value {
+                font-size: 2.5rem;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .error-message {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 16px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 ATS-Friendly CV Analyzer</h1>
+            <p class="subtitle">Optimize your resume for Applicant Tracking Systems</p>
+        </header>
+
+        <div class="card" id="uploadCard">
+            <div class="error-message" id="errorMessage"></div>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📄</div>
+                <div class="upload-text">Drop your CV here or click to browse</div>
+                <div class="upload-hint">Supports PDF and DOCX files (max 5MB)</div>
+                <input type="file" id="fileInput" accept=".pdf,.docx">
+            </div>
+
+            <div class="job-description-section">
+                <h3>Job Description (Optional but Recommended)</h3>
+                <textarea id="jobDescription" placeholder="Paste the job description here for better keyword matching and personalized recommendations..."></textarea>
+            </div>
+
+            <div style="text-align: center; margin-top: 24px;">
+                <button class="btn" id="analyzeBtn" disabled>Analyze CV</button>
+            </div>
+        </div>
+
+        <div class="card processing" id="processingCard">
+            <div class="spinner"></div>
+            <h3>Analyzing your CV...</h3>
+            <p style="color: var(--gray-600); margin-top: 8px;">This may take a few moments</p>
+        </div>
+
+        <div class="results" id="resultsCard">
+            <div class="card">
+                <div class="score-circle" id="scoreCircle">
+                    <div class="score-value" id="scoreValue">0</div>
+                    <div class="score-label">ATS Score</div>
+                </div>
+                <div class="score-rating" id="scoreRating"></div>
+
+                <div class="category-breakdown" id="categoryBreakdown"></div>
+
+                <div class="section-analysis" id="sectionAnalysis">
+                    <h2 style="margin-bottom: 16px;">Section-by-Section Analysis</h2>
+                    <div id="sectionCards"></div>
+                </div>
+
+                <div class="keyword-analysis" id="keywordAnalysis">
+                    <h2 style="margin-bottom: 16px;">Keyword Analysis</h2>
+                    <div id="keywordContent"></div>
+                </div>
+
+                <div class="tip-box">
+                    <h4>💡 Quick Tips to Improve Your Score</h4>
+                    <ul class="tip-list" id="quickTips"></ul>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn" onclick="location.reload()">Analyze Another CV</button>
+                    <button class="btn btn-secondary" onclick="window.print()">Save Report</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // PDF.js configuration
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        // State management
+        const state = {
+            file: null,
+            jobDescription: '',
+            parsedText: '',
+            analysisResult: null
+        };
+
+        // Scoring algorithm weights
+        const WEIGHTS = {
+            formatting: 30,
+            keywords: 30,
+            structure: 15,
+            readability: 15,
+            parsing: 10
+        };
+
+        // Common ATS-friendly keywords by category
+        const COMMON_KEYWORDS = {
+            technical: ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'SQL', 'AWS', 'Docker', 'Git', 'API', 'Agile', 'REST', 'TypeScript', 'MongoDB', 'PostgreSQL'],
+            soft_skills: ['leadership', 'communication', 'teamwork', 'problem-solving', 'analytical', 'project management', 'collaboration', 'adaptability'],
+            action_verbs: ['developed', 'managed', 'led', 'implemented', 'designed', 'created', 'improved', 'optimized', 'launched', 'analyzed']
+        };
+
+        // DOM elements
+        const uploadArea = document.getElementById('uploadArea');
+        const fileInput = document.getElementById('fileInput');
+        const analyzeBtn = document.getElementById('analyzeBtn');
+        const jobDescriptionInput = document.getElementById('jobDescription');
+        const uploadCard = document.getElementById('uploadCard');
+        const processingCard = document.getElementById('processingCard');
+        const resultsCard = document.getElementById('resultsCard');
+        const errorMessage = document.getElementById('errorMessage');
+
+        // Event listeners
+        uploadArea.addEventListener('click', () => fileInput.click());
+        uploadArea.addEventListener('dragover', handleDragOver);
+        uploadArea.addEventListener('dragleave', handleDragLeave);
+        uploadArea.addEventListener('drop', handleDrop);
+        fileInput.addEventListener('change', handleFileSelect);
+        analyzeBtn.addEventListener('click', analyzeCV);
+        jobDescriptionInput.addEventListener('input', (e) => {
+            state.jobDescription = e.target.value;
+        });
+
+        function handleDragOver(e) {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        }
+
+        function handleDragLeave(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        }
+
+        function handleDrop(e) {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFile(files[0]);
+            }
+        }
+
+        function handleFileSelect(e) {
+            if (e.target.files.length > 0) {
+                handleFile(e.target.files[0]);
+            }
+        }
+
+        function handleFile(file) {
+            // Validation
+            const validTypes = ['application/pdf', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'];
+            const maxSize = 5 * 1024 * 1024; // 5MB
+
+            if (!validTypes.includes(file.type)) {
+                showError('Please upload a PDF or DOCX file');
+                return;
+            }
+
+            if (file.size > maxSize) {
+                showError('File size must be less than 5MB');
+                return;
+            }
+
+            state.file = file;
+            analyzeBtn.disabled = false;
+            uploadArea.querySelector('.upload-text').textContent = `Selected: ${file.name}`;
+            hideError();
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+
+        async function analyzeCV() {
+            if (!state.file) return;
+
+            // Show processing
+            uploadCard.style.display = 'none';
+            processingCard.style.display = 'block';
+
+            try {
+                // Parse file
+                if (state.file.type === 'application/pdf') {
+                    await parsePDF(state.file);
+                } else {
+                    await parseDOCX(state.file);
+                }
+
+                // Perform analysis
+                const analysis = performAnalysis();
+                state.analysisResult = analysis;
+
+                // Display results
+                displayResults(analysis);
+
+                // Show results
+                processingCard.style.display = 'none';
+                resultsCard.style.display = 'block';
+
+                // Animate score
+                animateScore(analysis.overallScore);
+
+            } catch (error) {
+                console.error('Analysis error:', error);
+                showError('An error occurred during analysis. Please try again.');
+                processingCard.style.display = 'none';
+                uploadCard.style.display = 'block';
+            }
+        }
+
+        async function parsePDF(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const pdf = await pdfjsLib.getDocument(arrayBuffer).promise;
+            let text = '';
+
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const content = await page.getTextContent();
+                const pageText = content.items.map(item => item.str).join(' ');
+                text += pageText + '\n';
+            }
+
+            state.parsedText = text;
+        }
+
+        async function parseDOCX(file) {
+            const arrayBuffer = await file.arrayBuffer();
+            const result = await mammoth.extractRawText({ arrayBuffer });
+            state.parsedText = result.value;
+        }
+
+        function performAnalysis() {
+            const text = state.parsedText;
+            const jobDesc = state.jobDescription;
+
+            // Initialize scores
+            const categoryScores = {
+                formatting: 0,
+                keywords: 0,
+                structure: 0,
+                readability: 0,
+                parsing: 0
+            };
+
+            const issues = [];
+            const sections = detectSections(text);
+
+            // 1. Formatting Analysis (30%)
+            const formattingResult = analyzeFormatting(text);
+            categoryScores.formatting = formattingResult.score;
+            issues.push(...formattingResult.issues);
+
+            // 2. Keyword Analysis (30%)
+            const keywordResult = analyzeKeywords(text, jobDesc);
+            categoryScores.keywords = keywordResult.score;
+            issues.push(...keywordResult.issues);
+
+            // 3. Structure Analysis (15%)
+            const structureResult = analyzeStructure(sections, text);
+            categoryScores.structure = structureResult.score;
+            issues.push(...structureResult.issues);
+
+            // 4. Readability Analysis (15%)
+            const readabilityResult = analyzeReadability(text);
+            categoryScores.readability = readabilityResult.score;
+            issues.push(...readabilityResult.issues);
+
+            // 5. Parsing Quality (10%)
+            const parsingResult = analyzeParsingQuality(text);
+            categoryScores.parsing = parsingResult.score;
+            issues.push(...parsingResult.issues);
+
+            // Calculate overall score
+            const overallScore = Math.round(
+                (categoryScores.formatting * WEIGHTS.formatting +
+                 categoryScores.keywords * WEIGHTS.keywords +
+                 categoryScores.structure * WEIGHTS.structure +
+                 categoryScores.readability * WEIGHTS.readability +
+                 categoryScores.parsing * WEIGHTS.parsing) / 100
+            );
+
+            return {
+                overallScore,
+                categoryScores,
+                issues,
+                sections,
+                keywords: keywordResult.keywords,
+                recommendations: generateRecommendations(issues, overallScore)
+            };
+        }
+
+        function detectSections(text) {
+            const sections = {
+                contact: false,
+                summary: false,
+                experience: false,
+                education: false,
+                skills: false
+            };
+
+            const sectionKeywords = {
+                contact: /contact|email|phone|address/i,
+                summary: /summary|objective|profile|about/i,
+                experience: /experience|employment|work history|career/i,
+                education: /education|academic|degree|university|college/i,
+                skills: /skills|technical|competencies|expertise/i
+            };
+
+            for (const [section, regex] of Object.entries(sectionKeywords)) {
+                sections[section] = regex.test(text);
+            }
+
+            return sections;
+        }
+
+        function analyzeFormatting(text) {
+            let score = 100;
+            const issues = [];
+
+            // Check for tables (common ATS issue)
+            if (/\t{2,}/.test(text) || /\|/.test(text)) {
+                score -= 15;
+                issues.push({
+                    category: 'formatting',
+                    severity: 'high',
+                    title: 'Tables Detected',
+                    description: 'Tables can confuse ATS systems and cause text to be read out of order',
+                    recommendation: 'Replace tables with bullet points and clear text formatting'
+                });
+            }
+
+            // Check for special characters
+            const specialChars = text.match(/[★☆●◆■]/g);
+            if (specialChars && specialChars.length > 5) {
+                score -= 10;
+                issues.push({
+                    category: 'formatting',
+                    severity: 'medium',
+                    title: 'Special Characters Detected',
+                    description: 'Special characters and symbols may not be recognized by ATS',
+                    recommendation: 'Use standard bullet points (•) or hyphens (-) instead'
+                });
+            }
+
+            // Check for excessive spacing
+            if (/\n{4,}/.test(text)) {
+                score -= 5;
+                issues.push({
+                    category: 'formatting',
+                    severity: 'low',
+                    title: 'Excessive Spacing',
+                    description: 'Large gaps in your resume may cause parsing issues',
+                    recommendation: 'Use consistent single or double spacing between sections'
+                });
+            }
+
+            return { score: Math.max(0, score), issues };
+        }
+
+        function analyzeKeywords(text, jobDesc) {
+            let score = 100;
+            const issues = [];
+            const keywords = {
+                matched: [],
+                missing: []
+            };
+
+            // Extract keywords from job description or use common ones
+            let targetKeywords = [];
+            if (jobDesc) {
+                targetKeywords = extractKeywords(jobDesc);
+            } else {
+                targetKeywords = [...COMMON_KEYWORDS.technical, ...COMMON_KEYWORDS.soft_skills];
+            }
+
+            // Check keyword presence
+            const textLower = text.toLowerCase();
+            targetKeywords.forEach(keyword => {
+                if (textLower.includes(keyword.toLowerCase())) {
+                    keywords.matched.push(keyword);
+                } else {
+                    keywords.missing.push(keyword);
+                }
+            });
+
+            // Calculate score based on match rate
+            const matchRate = keywords.matched.length / targetKeywords.length;
+            score = Math.round(matchRate * 100);
+
+            if (matchRate < 0.3) {
+                issues.push({
+                    category: 'keywords',
+                    severity: 'high',
+                    title: 'Low Keyword Match',
+                    description: `Only ${Math.round(matchRate * 100)}% of relevant keywords found in your CV`,
+                    recommendation: 'Add more role-specific keywords from the job description'
+                });
+            } else if (matchRate < 0.6) {
+                issues.push({
+                    category: 'keywords',
+                    severity: 'medium',
+                    title: 'Moderate Keyword Match',
+                    description: `${Math.round(matchRate * 100)}% keyword match - room for improvement`,
+                    recommendation: 'Incorporate missing keywords naturally into your experience and skills'
+                });
+            }
+
+            // Check for keyword stuffing
+            const keywordDensity = keywords.matched.length / text.split(/\s+/).length;
+            if (keywordDensity > 0.05) {
+                score -= 15;
+                issues.push({
+                    category: 'keywords',
+                    severity: 'medium',
+                    title: 'Possible Keyword Stuffing',
+                    description: 'Excessive keyword usage may be flagged by ATS',
+                    recommendation: 'Use keywords naturally and avoid repetition'
+                });
+            }
+
+            return { score: Math.max(0, score), issues, keywords };
+        }
+
+        function extractKeywords(text) {
+            const words = text.toLowerCase()
+                .replace(/[^\w\s-]/g, ' ')
+                .split(/\s+/)
+                .filter(w => w.length > 3);
+            
+            const frequency = {};
+            words.forEach(word => {
+                frequency[word] = (frequency[word] || 0) + 1;
+            });
+
+            return Object.entries(frequency)
+                .sort((a, b) => b[1] - a[1])
+                .slice(0, 20)
+                .map(([word]) => word);
+        }
+
+        function analyzeStructure(sections, text) {
+            let score = 100;
+            const issues = [];
+
+            // Check for required sections
+            const requiredSections = ['experience', 'education', 'skills'];
+            const missingSections = requiredSections.filter(s => !sections[s]);
+
+            if (missingSections.length > 0) {
+                score -= missingSections.length * 20;
+                issues.push({
+                    category: 'structure',
+                    severity: 'high',
+                    title: 'Missing Required Sections',
+                    description: `Missing sections: ${missingSections.join(', ')}`,
+                    recommendation: 'Add standard sections with clear headings'
+                });
+            }
+
+            // Check for contact information
+            if (!sections.contact && !/\b[\w.-]+@[\w.-]+\.\w+\b/.test(text)) {
+                score -= 15;
+                issues.push({
+                    category: 'structure',
+                    severity: 'medium',
+                    title: 'Contact Information Missing or Unclear',
+                    description: 'ATS needs to easily identify your contact details',
+                    recommendation: 'Include email and phone number at the top of your resume'
+                });
+            }
+
+            return { score: Math.max(0, score), issues };
+        }
+
+        function analyzeReadability(text) {
+            let score = 100;
+            const issues = [];
+
+            // Check for bullet points
+            const bulletPoints = (text.match(/[•\-\*]/g) || []).length;
+            if (bulletPoints < 5) {
+                score -= 20;
+                issues.push({
+                    category: 'readability',
+                    severity: 'medium',
+                    title: 'Limited Use of Bullet Points',
+                    description: 'Bullet points improve readability and ATS parsing',
+                    recommendation: 'Use bullet points to list achievements and responsibilities'
+                });
+            }
+
+            // Check for action verbs
+            const actionVerbCount = COMMON_KEYWORDS.action_verbs.filter(verb => 
+                text.toLowerCase().includes(verb)
+            ).length;
+            
+            if (actionVerbCount < 3) {
+                score -= 15;
+                issues.push({
+                    category: 'readability',
+                    severity: 'medium',
+                    title: 'Few Action Verbs',
+                    description: 'Action verbs strengthen your experience descriptions',
+                    recommendation: 'Start bullet points with strong action verbs like "developed", "led", "implemented"'
+                });
+            }
+
+            // Check for numbers/quantification
+            const numbers = text.match(/\d+%|\$\d+|(\d+\+)/g);
+            if (!numbers || numbers.length < 3) {
+                score -= 10;
+                issues.push({
+                    category: 'readability',
+                    severity: 'low',
+                    title: 'Limited Quantification',
+                    description: 'Quantified achievements stand out to both ATS and recruiters',
+                    recommendation: 'Add numbers and metrics to demonstrate impact (e.g., "Increased sales by 25%")'
+                });
+            }
+
+            return { score: Math.max(0, score), issues };
+        }
+
+        function analyzeParsingQuality(text) {
+            let score = 100;
+            const issues = [];
+
+            // Check text length
+            if (text.length < 500) {
+                score -= 30;
+                issues.push({
+                    category: 'parsing',
+                    severity: 'high',
+                    title: 'Insufficient Content',
+                    description: 'Your CV may be too short or have parsing issues',
+                    recommendation: 'Ensure your CV has sufficient detail and is properly formatted'
+                });
+            }
+
+            // Check for encoding issues
+            if (/[\uFFFD\x00-\x08\x0B\x0C\x0E-\x1F]/.test(text)) {
+                score -= 15;
+                issues.push({
+                    category: 'parsing',
+                    severity: 'medium',
+                    title: 'Character Encoding Issues',
+                    description: 'Some characters may not be recognized by ATS',
+                    recommendation: 'Save your file with standard encoding (UTF-8)'
+                });
+            }
+
+            return { score: Math.max(0, score), issues };
+        }
+
+        function generateRecommendations(issues, score) {
+            const recommendations = [];
+
+            if (score < 60) {
+                recommendations.push('Major restructuring needed - focus on standard formatting first');
+            } else if (score < 80) {
+                recommendations.push('Good foundation - refine keywords and formatting for better results');
+            } else {
+                recommendations.push('Strong ATS compatibility - minor tweaks can push you to excellence');
+            }
+
+            // Priority recommendations based on issues
+            const highSeverity = issues.filter(i => i.severity === 'high');
+            if (highSeverity.length > 0) {
+                recommendations.push(`Address ${highSeverity.length} critical issue(s) first`);
+            }
+
+            return recommendations;
+        }
+
+        function displayResults(analysis) {
+            // Update score circle
+            const scoreCircle = document.getElementById('scoreCircle');
+            const scoreColor = getScoreColor(analysis.overallScore);
+            scoreCircle.style.setProperty('--score', analysis.overallScore);
+            scoreCircle.style.setProperty('--score-color', scoreColor);
+
+            // Update rating
+            const ratingText = getRatingText(analysis.overallScore);
+            document.getElementById('scoreRating').textContent = ratingText;
+            document.getElementById('scoreRating').style.color = scoreColor;
+
+            // Display category breakdown
+            displayCategoryBreakdown(analysis);
+
+            // Display section analysis
+            displaySectionAnalysis(analysis);
+
+            // Display keyword analysis
+            displayKeywordAnalysis(analysis);
+
+            // Display quick tips
+            displayQuickTips(analysis);
+        }
+
+        function displayCategoryBreakdown(analysis) {
+            const container = document.getElementById('categoryBreakdown');
+            container.innerHTML = '';
+
+            const categories = [
+                { key: 'formatting', name: 'Formatting & Layout', weight: WEIGHTS.formatting },
+                { key: 'keywords', name: 'Keyword Optimization', weight: WEIGHTS.keywords },
+                { key: 'structure', name: 'Section Structure', weight: WEIGHTS.structure },
+                { key: 'readability', name: 'Readability & Clarity', weight: WEIGHTS.readability },
+                { key: 'parsing', name: 'File Quality', weight: WEIGHTS.parsing }
+            ];
+
+            categories.forEach(cat => {
+                const score = analysis.categoryScores[cat.key];
+                const categoryIssues = analysis.issues.filter(i => i.category === cat.key);
+                
+                const categoryDiv = document.createElement('div');
+                categoryDiv.className = 'category';
+                categoryDiv.style.borderLeftColor = getScoreColor(score);
+                
+                categoryDiv.innerHTML = `
+                    <div class="category-header">
+                        <div class="category-name">${cat.name}</div>
+                        <div class="category-score" style="color: ${getScoreColor(score)}">${score}/100</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" style="width: ${score}%; background: ${getScoreColor(score)}"></div>
+                    </div>
+                    ${categoryIssues.length > 0 ? `
+                        <div class="issues-list">
+                            ${categoryIssues.map(issue => `
+                                <div class="issue">
+                                    <div class="issue-title">${issue.title}</div>
+                                    <div class="issue-description">${issue.description}</div>
+                                    <div class="issue-recommendation">✓ ${issue.recommendation}</div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    ` : '<div style="color: var(--success); margin-top: 8px; font-weight: 500;">✓ No issues detected</div>'}
+                `;
+                
+                container.appendChild(categoryDiv);
+            });
+        }
+
+        function displaySectionAnalysis(analysis) {
+            const container = document.getElementById('sectionCards');
+            container.innerHTML = '';
+
+            const sectionInfo = [
+                { key: 'contact', name: 'Contact Information' },
+                { key: 'summary', name: 'Professional Summary' },
+                { key: 'experience', name: 'Work Experience' },
+                { key: 'education', name: 'Education' },
+                { key: 'skills', name: 'Skills' }
+            ];
+
+            sectionInfo.forEach(section => {
+                const found = analysis.sections[section.key];
+                const status = found ? 'good' : 'poor';
+                const statusText = found ? 'Detected' : 'Missing';
+                
+                const sectionDiv = document.createElement('div');
+                sectionDiv.className = 'section-card';
+                
+                sectionDiv.innerHTML = `
+                    <div class="section-header">
+                        <div class="section-title">${section.name}</div>
+                        <div class="section-status status-${status}">${statusText}</div>
+                    </div>
+                    ${!found && ['experience', 'education', 'skills'].includes(section.key) ? 
+                        '<div style="color: var(--gray-600); font-size: 0.9rem;">This section is required for most ATS systems</div>' : ''}
+                `;
+                
+                container.appendChild(sectionDiv);
+            });
+        }
+
+        function displayKeywordAnalysis(analysis) {
+            const container = document.getElementById('keywordContent');
+            
+            if (analysis.keywords.matched.length === 0 && analysis.keywords.missing.length === 0) {
+                container.innerHTML = '<p style="color: var(--gray-600);">Add a job description for detailed keyword analysis</p>';
+                return;
+            }
+
+            container.innerHTML = `
+                ${analysis.keywords.matched.length > 0 ? `
+                    <div class="keyword-section">
+                        <h3>✓ Matched Keywords (${analysis.keywords.matched.length})</h3>
+                        <div class="keyword-tags">
+                            ${analysis.keywords.matched.slice(0, 15).map(kw => 
+                                `<span class="keyword-tag keyword-matched">${kw}</span>`
+                            ).join('')}
+                        </div>
+                    </div>
+                ` : ''}
+                
+                ${analysis.keywords.missing.length > 0 ? `
+                    <div class="keyword-section">
+                        <h3>⚠ Missing Keywords (${analysis.keywords.missing.length})</h3>
+                        <div class="keyword-tags">
+                            ${analysis.keywords.missing.slice(0, 15).map(kw => 
+                                `<span class="keyword-tag keyword-missing">${kw}</span>`
+                            ).join('')}
+                        </div>
+                        <p style="color: var(--gray-600); margin-top: 12px; font-size: 0.9rem;">
+                            Consider adding these relevant keywords if they match your experience
+                        </p>
+                    </div>
+                ` : ''}
+            `;
+        }
+
+        function displayQuickTips(analysis) {
+            const container = document.getElementById('quickTips');
+            const tips = [];
+
+            if (analysis.overallScore < 60) {
+                tips.push('Use a simple, clean layout without tables or columns');
+                tips.push('Include standard section headings (Experience, Education, Skills)');
+                tips.push('Save as PDF or DOCX format');
+            }
+
+            if (analysis.categoryScores.keywords < 70) {
+                tips.push('Add more keywords from the job description');
+                tips.push('Use industry-standard terminology');
+            }
+
+            if (analysis.categoryScores.readability < 80) {
+                tips.push('Start bullet points with strong action verbs');
+                tips.push('Quantify your achievements with numbers and percentages');
+            }
+
+            if (analysis.categoryScores.formatting < 80) {
+                tips.push('Remove tables, text boxes, and graphics');
+                tips.push('Use standard fonts (Arial, Calibri, Times New Roman)');
+            }
+
+            if (tips.length === 0) {
+                tips.push('Your CV is well-optimized for ATS!');
+                tips.push('Consider tailoring it for each specific job application');
+                tips.push('Keep it updated with your latest achievements');
+            }
+
+            container.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
+        }
+
+        function getScoreColor(score) {
+            if (score >= 80) return '#10b981';
+            if (score >= 60) return '#f59e0b';
+            return '#ef4444';
+        }
+
+        function getRatingText(score) {
+            if (score >= 80) return '🎉 Excellent - ATS-Friendly';
+            if (score >= 60) return '⚠ Good - Needs Improvement';
+            return '❌ Poor - High Rejection Risk';
+        }
+
+        function animateScore(targetScore) {
+            const scoreElement = document.getElementById('scoreValue');
+            let currentScore = 0;
+            const increment = targetScore / 50;
+            const timer = setInterval(() => {
+                currentScore += increment;
+                if (currentScore >= targetScore) {
+                    currentScore = targetScore;
+                    clearInterval(timer);
+                }
+                scoreElement.textContent = Math.round(currentScore);
+            }, 20);
+        }
+    </script>
+</body>
+</html>
