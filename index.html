@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ATS-Friendly CV Analyzer</title>
+    <title>ATS-Friendly CV Analyzer | Professional Resume Optimization</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -16,12 +16,21 @@
         }
 
         :root {
-            --primary: #007AFF;
-            --primary-dark: #0051D5;
-            --primary-light: #4DA2FF;
-            --success: #34C759;
-            --warning: #FF9500;
-            --danger: #FF3B30;
+            /* Professional Color Palette */
+            --primary: #2563EB;
+            --primary-dark: #1E40AF;
+            --primary-light: #60A5FA;
+            --secondary: #8B5CF6;
+            --secondary-light: #A78BFA;
+            --success: #10B981;
+            --success-light: #34D399;
+            --warning: #F59E0B;
+            --warning-light: #FBBF24;
+            --danger: #EF4444;
+            --danger-light: #F87171;
+            --info: #3B82F6;
+            
+            /* Neutral Colors */
             --gray-50: #F9FAFB;
             --gray-100: #F3F4F6;
             --gray-200: #E5E7EB;
@@ -32,27 +41,32 @@
             --gray-700: #374151;
             --gray-800: #1F2937;
             --gray-900: #111827;
-            --glass-bg: rgba(255, 255, 255, 0.75);
-            --glass-border: rgba(255, 255, 255, 0.3);
+            
+            /* Glass Effects */
+            --glass-bg: rgba(255, 255, 255, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.4);
+            
+            /* Shadows */
             --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
             --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
             --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            --shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
         }
 
         @keyframes float {
             0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-20px); }
+            50% { transform: translateY(-15px); }
         }
 
         @keyframes pulse-glow {
             0%, 100% { 
-                box-shadow: 0 0 20px rgba(0, 122, 255, 0.3),
-                            0 0 40px rgba(0, 122, 255, 0.1);
+                box-shadow: 0 0 20px rgba(37, 99, 235, 0.4),
+                            0 0 40px rgba(37, 99, 235, 0.15);
             }
             50% { 
-                box-shadow: 0 0 30px rgba(0, 122, 255, 0.5),
-                            0 0 60px rgba(0, 122, 255, 0.2);
+                box-shadow: 0 0 30px rgba(37, 99, 235, 0.6),
+                            0 0 60px rgba(37, 99, 235, 0.25);
             }
         }
 
@@ -76,7 +90,7 @@
         @keyframes scale-in {
             from {
                 opacity: 0;
-                transform: scale(0.9);
+                transform: scale(0.95);
             }
             to {
                 opacity: 1;
@@ -89,11 +103,21 @@
             100% { background-position: 1000px 0; }
         }
 
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #1E3A8A 0%, #3B82F6 25%, #8B5CF6 75%, #EC4899 100%);
             background-size: 200% 200%;
-            animation: gradient-shift 15s ease infinite;
+            animation: gradient-shift 20s ease infinite;
             min-height: 100vh;
             padding: 20px;
             color: var(--gray-900);
@@ -107,12 +131,12 @@
             width: 100%;
             height: 100%;
             z-index: 0;
-            opacity: 0.1;
+            opacity: 0.08;
             pointer-events: none;
             background-image: 
-                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+                radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.3) 0%, transparent 50%);
         }
 
         .container {
@@ -131,48 +155,51 @@
 
         h1 {
             font-size: 3rem;
-            margin-bottom: 10px;
-            font-weight: 700;
-            letter-spacing: -0.5px;
+            margin-bottom: 12px;
+            font-weight: 800;
+            letter-spacing: -1px;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 16px;
+            text-shadow: 0 2px 20px rgba(0, 0, 0, 0.2);
         }
 
         .header-icon {
             animation: float 3s ease-in-out infinite;
+            filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
         }
 
         .subtitle {
-            font-size: 1.2rem;
+            font-size: 1.25rem;
             opacity: 0.95;
             font-weight: 400;
+            text-shadow: 0 1px 10px rgba(0, 0, 0, 0.15);
         }
 
         .card {
             background: var(--glass-bg);
-            backdrop-filter: blur(20px) saturate(180%);
-            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            backdrop-filter: blur(24px) saturate(180%);
+            -webkit-backdrop-filter: blur(24px) saturate(180%);
             border: 1px solid var(--glass-border);
-            border-radius: 24px;
+            border-radius: 20px;
             padding: 40px;
-            box-shadow: var(--shadow-xl),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: var(--shadow-2xl),
+                        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
             margin-bottom: 24px;
             animation: scale-in 0.5s ease-out;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
         }
 
         .card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.2),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            transform: translateY(-2px);
+            box-shadow: 0 30px 60px -12px rgba(0, 0, 0, 0.25),
+                        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
         }
 
         .upload-area {
-            border: 3px dashed rgba(255, 255, 255, 0.4);
-            border-radius: 20px;
+            border: 3px dashed rgba(255, 255, 255, 0.5);
+            border-radius: 16px;
             padding: 60px 24px;
             text-align: center;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -189,7 +216,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.25), transparent);
             transition: left 0.5s;
         }
 
@@ -201,12 +228,12 @@
             border-color: var(--primary-light);
             background: rgba(255, 255, 255, 0.2);
             transform: scale(1.02);
-            box-shadow: 0 10px 40px rgba(0, 122, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(37, 99, 235, 0.3);
         }
 
         .upload-area.dragover {
             border-color: var(--primary);
-            background: rgba(0, 122, 255, 0.15);
+            background: rgba(37, 99, 235, 0.15);
             transform: scale(1.05);
             animation: pulse-glow 1.5s ease-in-out infinite;
         }
@@ -221,12 +248,13 @@
             font-size: 1.3rem;
             color: var(--gray-900);
             margin-bottom: 12px;
-            font-weight: 600;
+            font-weight: 700;
         }
 
         .upload-hint {
             color: var(--gray-700);
             font-size: 0.95rem;
+            font-weight: 500;
         }
 
         input[type="file"] {
@@ -237,18 +265,19 @@
             background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: white;
             border: none;
-            padding: 16px 32px;
-            border-radius: 16px;
+            padding: 18px 36px;
+            border-radius: 12px;
             font-size: 1.05rem;
             cursor: pointer;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            font-weight: 600;
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.4);
+            font-weight: 700;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4);
             display: inline-flex;
             align-items: center;
             gap: 10px;
             position: relative;
             overflow: hidden;
+            letter-spacing: 0.3px;
         }
 
         .btn::before {
@@ -270,12 +299,12 @@
         }
 
         .btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 8px 25px rgba(0, 122, 255, 0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(37, 99, 235, 0.5);
         }
 
         .btn:active {
-            transform: translateY(-1px);
+            transform: translateY(0);
         }
 
         .btn:disabled {
@@ -283,6 +312,7 @@
             cursor: not-allowed;
             transform: none;
             box-shadow: none;
+            opacity: 0.6;
         }
 
         .processing {
@@ -300,7 +330,7 @@
 
         .spinner {
             position: absolute;
-            border: 5px solid rgba(255, 255, 255, 0.2);
+            border: 5px solid rgba(255, 255, 255, 0.3);
             border-top: 5px solid var(--primary);
             border-radius: 50%;
             width: 80px;
@@ -310,8 +340,8 @@
 
         .spinner-inner {
             position: absolute;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-bottom: 5px solid var(--primary-light);
+            border: 5px solid rgba(255, 255, 255, 0.15);
+            border-bottom: 5px solid var(--secondary);
             border-radius: 50%;
             width: 60px;
             height: 60px;
@@ -320,20 +350,17 @@
             animation: spin 1.5s cubic-bezier(0.68, -0.55, 0.265, 1.55) infinite reverse;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
         .processing h3 {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             margin-bottom: 12px;
             color: var(--gray-900);
+            font-weight: 700;
         }
 
         .processing-text {
             color: var(--gray-700);
-            font-size: 1rem;
+            font-size: 1.05rem;
+            font-weight: 500;
         }
 
         .results {
@@ -342,14 +369,14 @@
 
         .score-circle-container {
             position: relative;
-            width: 240px;
-            height: 240px;
+            width: 260px;
+            height: 260px;
             margin: 0 auto 40px;
         }
 
         .score-circle {
-            width: 240px;
-            height: 240px;
+            width: 260px;
+            height: 260px;
             border-radius: 50%;
             display: flex;
             flex-direction: column;
@@ -358,51 +385,51 @@
             position: relative;
             background: conic-gradient(
                 var(--score-color) calc(var(--score) * 1%), 
-                rgba(255, 255, 255, 0.2) 0
+                rgba(255, 255, 255, 0.25) 0
             );
             animation: scale-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15),
-                        0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2),
+                        0 0 0 1px rgba(255, 255, 255, 0.15) inset;
         }
 
         .score-circle::before {
             content: '';
             position: absolute;
-            width: 200px;
-            height: 200px;
+            width: 220px;
+            height: 220px;
             border-radius: 50%;
-            background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.85) 100%);
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1) inset;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(255, 255, 255, 0.92) 100%);
+            box-shadow: 0 6px 25px rgba(0, 0, 0, 0.12) inset;
         }
 
         .score-icon-bg {
             position: absolute;
-            top: 20px;
-            right: 20px;
+            top: 25px;
+            right: 25px;
             animation: float 2.5s ease-in-out infinite;
         }
 
         .score-value {
-            font-size: 3.5rem;
-            font-weight: 800;
+            font-size: 4rem;
+            font-weight: 900;
             z-index: 1;
             color: var(--gray-900);
-            letter-spacing: -2px;
+            letter-spacing: -3px;
         }
 
         .score-label {
-            font-size: 1rem;
+            font-size: 1.05rem;
             color: var(--gray-600);
             z-index: 1;
-            font-weight: 600;
+            font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 1.5px;
         }
 
         .score-rating {
             text-align: center;
-            font-size: 1.6rem;
-            font-weight: 700;
+            font-size: 1.75rem;
+            font-weight: 800;
             margin-bottom: 40px;
             display: flex;
             align-items: center;
@@ -413,61 +440,62 @@
 
         .category-breakdown {
             display: grid;
-            gap: 20px;
+            gap: 24px;
             margin-bottom: 40px;
             animation: slide-up 0.6s ease-out 0.3s both;
         }
 
         .category {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 24px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            padding: 28px;
             border-radius: 16px;
-            border-left: 4px solid var(--primary);
+            border-left: 5px solid var(--primary);
             transition: all 0.3s ease;
             box-shadow: var(--shadow-sm);
         }
 
         .category:hover {
-            transform: translateX(8px);
-            box-shadow: var(--shadow-md);
-            background: rgba(255, 255, 255, 0.8);
+            transform: translateX(6px);
+            box-shadow: var(--shadow-lg);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .category-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
         .category-name {
-            font-weight: 700;
-            font-size: 1.15rem;
+            font-weight: 800;
+            font-size: 1.2rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            color: var(--gray-900);
         }
 
         .category-score {
-            font-size: 1.4rem;
-            font-weight: 800;
+            font-size: 1.5rem;
+            font-weight: 900;
         }
 
         .progress-bar {
             background: rgba(0, 0, 0, 0.08);
-            height: 10px;
-            border-radius: 10px;
+            height: 12px;
+            border-radius: 12px;
             overflow: hidden;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) inset;
+            margin-bottom: 14px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06) inset;
         }
 
         .progress-fill {
             height: 100%;
             background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
-            transition: width 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            border-radius: 10px;
+            transition: width 1.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            border-radius: 12px;
             position: relative;
             overflow: hidden;
         }
@@ -479,17 +507,17 @@
             left: 0;
             bottom: 0;
             right: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-            animation: shimmer 2s infinite;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: shimmer 2.5s infinite;
         }
 
         .issues-list {
-            margin-top: 12px;
+            margin-top: 14px;
         }
 
         .issue {
             background: white;
-            padding: 16px;
+            padding: 18px;
             border-radius: 12px;
             margin-bottom: 12px;
             border-left: 4px solid var(--warning);
@@ -503,28 +531,29 @@
         }
 
         .issue-title {
-            font-weight: 700;
-            margin-bottom: 8px;
+            font-weight: 800;
+            margin-bottom: 10px;
             color: var(--gray-900);
             display: flex;
             align-items: center;
             gap: 8px;
+            font-size: 1.05rem;
         }
 
         .issue-description {
             font-size: 0.95rem;
             color: var(--gray-600);
-            margin-bottom: 8px;
-            line-height: 1.5;
+            margin-bottom: 10px;
+            line-height: 1.6;
         }
 
         .issue-recommendation {
             font-size: 0.95rem;
             color: var(--primary);
-            font-weight: 600;
+            font-weight: 700;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .section-analysis {
@@ -533,9 +562,9 @@
         }
 
         .section-card {
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
-            padding: 24px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
+            padding: 26px;
             border-radius: 16px;
             margin-bottom: 16px;
             transition: all 0.3s ease;
@@ -545,7 +574,7 @@
         .section-card:hover {
             box-shadow: var(--shadow-md);
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.8);
+            background: rgba(255, 255, 255, 0.85);
         }
 
         .section-header {
@@ -556,38 +585,39 @@
         }
 
         .section-title {
-            font-weight: 700;
+            font-weight: 800;
             font-size: 1.15rem;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            color: var(--gray-900);
         }
 
         .section-status {
-            padding: 6px 16px;
-            border-radius: 20px;
+            padding: 8px 18px;
+            border-radius: 24px;
             font-size: 0.85rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.7px;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .status-good {
-            background: rgba(52, 199, 89, 0.15);
-            color: #1B5E20;
+            background: rgba(16, 185, 129, 0.15);
+            color: #047857;
         }
 
         .status-warning {
-            background: rgba(255, 149, 0, 0.15);
-            color: #E65100;
+            background: rgba(245, 158, 11, 0.15);
+            color: #B45309;
         }
 
         .status-poor {
-            background: rgba(255, 59, 48, 0.15);
-            color: #B71C1C;
+            background: rgba(239, 68, 68, 0.15);
+            color: #991B1B;
         }
 
         .keyword-analysis {
@@ -596,30 +626,30 @@
         }
 
         .keyword-section {
-            margin-bottom: 28px;
+            margin-bottom: 32px;
         }
 
         .keyword-section h3 {
-            font-size: 1.2rem;
-            margin-bottom: 16px;
-            color: var(--gray-800);
-            font-weight: 700;
+            font-size: 1.3rem;
+            margin-bottom: 18px;
+            color: var(--gray-900);
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .keyword-tags {
             display: flex;
             flex-wrap: wrap;
-            gap: 10px;
+            gap: 12px;
         }
 
         .keyword-tag {
-            padding: 10px 18px;
+            padding: 12px 20px;
             border-radius: 24px;
-            font-size: 0.9rem;
-            font-weight: 600;
+            font-size: 0.95rem;
+            font-weight: 700;
             transition: all 0.3s ease;
             cursor: default;
         }
@@ -630,13 +660,15 @@
         }
 
         .keyword-matched {
-            background: rgba(52, 199, 89, 0.15);
-            color: #1B5E20;
+            background: rgba(16, 185, 129, 0.15);
+            color: #047857;
+            border: 2px solid rgba(16, 185, 129, 0.3);
         }
 
         .keyword-missing {
-            background: rgba(255, 59, 48, 0.15);
-            color: #B71C1C;
+            background: rgba(239, 68, 68, 0.15);
+            color: #991B1B;
+            border: 2px solid rgba(239, 68, 68, 0.3);
         }
 
         .action-buttons {
@@ -651,7 +683,7 @@
             background: white;
             color: var(--primary);
             border: 2px solid var(--primary);
-            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.25);
         }
 
         .btn-secondary:hover {
@@ -661,47 +693,49 @@
 
         .job-description-section {
             margin-top: 32px;
-            padding: 28px;
-            background: rgba(255, 255, 255, 0.4);
+            padding: 32px;
+            background: rgba(255, 255, 255, 0.45);
             backdrop-filter: blur(10px);
             border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.3);
+            border: 2px solid rgba(255, 255, 255, 0.4);
         }
 
         .job-description-section h3 {
-            margin-bottom: 16px;
-            color: var(--gray-800);
-            font-weight: 700;
+            margin-bottom: 18px;
+            color: var(--gray-900);
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            font-size: 1.15rem;
         }
 
         textarea {
             width: 100%;
-            padding: 16px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 18px;
+            border: 2px solid rgba(255, 255, 255, 0.4);
             border-radius: 12px;
             font-family: inherit;
             font-size: 0.95rem;
             resize: vertical;
-            min-height: 140px;
-            background: rgba(255, 255, 255, 0.7);
+            min-height: 150px;
+            background: rgba(255, 255, 255, 0.8);
             transition: all 0.3s ease;
             color: var(--gray-900);
+            font-weight: 500;
         }
 
         textarea:focus {
             outline: none;
             border-color: var(--primary);
-            box-shadow: 0 0 0 4px rgba(0, 122, 255, 0.1);
-            background: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.12);
+            background: rgba(255, 255, 255, 0.98);
         }
 
         .tip-box {
-            background: rgba(0, 122, 255, 0.08);
-            border-left: 4px solid var(--primary);
-            padding: 24px;
+            background: rgba(37, 99, 235, 0.1);
+            border-left: 5px solid var(--primary);
+            padding: 28px;
             border-radius: 16px;
             margin-top: 32px;
             backdrop-filter: blur(10px);
@@ -710,12 +744,12 @@
 
         .tip-box h4 {
             color: var(--primary);
-            margin-bottom: 16px;
-            font-size: 1.2rem;
-            font-weight: 700;
+            margin-bottom: 18px;
+            font-size: 1.3rem;
+            font-weight: 800;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .tip-list {
@@ -724,106 +758,114 @@
         }
 
         .tip-list li {
-            padding: 10px 0;
-            padding-left: 32px;
+            padding: 12px 0;
+            padding-left: 36px;
             position: relative;
             color: var(--gray-800);
-            line-height: 1.6;
+            line-height: 1.7;
+            font-weight: 500;
         }
 
         .tip-list li::before {
-            content: '';
+            content: '✓';
             position: absolute;
             left: 0;
-            top: 14px;
-            width: 20px;
-            height: 20px;
+            top: 12px;
+            width: 24px;
+            height: 24px;
             background: var(--primary);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
+            color: white;
+            font-weight: 900;
+            font-size: 0.85rem;
         }
 
         .chart-container {
             margin: 32px 0;
-            padding: 24px;
-            background: rgba(255, 255, 255, 0.6);
-            backdrop-filter: blur(10px);
+            padding: 28px;
+            background: rgba(255, 255, 255, 0.65);
+            backdrop-filter: blur(12px);
             border-radius: 16px;
             box-shadow: var(--shadow-sm);
         }
 
         .chart-container h3 {
-            margin-bottom: 20px;
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--gray-800);
+            margin-bottom: 22px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--gray-900);
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
         }
 
         .ai-analysis-section {
             margin-top: 32px;
-            padding: 28px;
-            background: linear-gradient(135deg, rgba(103, 126, 234, 0.1) 0%, rgba(118, 75, 162, 0.1) 100%);
-            backdrop-filter: blur(10px);
+            padding: 32px;
+            background: linear-gradient(135deg, rgba(37, 99, 235, 0.12) 0%, rgba(139, 92, 246, 0.12) 100%);
+            backdrop-filter: blur(12px);
             border-radius: 16px;
-            border: 2px solid rgba(103, 126, 234, 0.3);
+            border: 2px solid rgba(37, 99, 235, 0.35);
             animation: slide-up 0.6s ease-out 0.7s both;
         }
 
         .ai-analysis-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
+            gap: 14px;
+            margin-bottom: 22px;
         }
 
         .ai-analysis-header h3 {
-            font-size: 1.3rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-size: 1.4rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
 
         .ai-badge {
-            padding: 4px 12px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
-            border-radius: 12px;
+            border-radius: 14px;
             font-size: 0.75rem;
-            font-weight: 700;
+            font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
+            letter-spacing: 0.8px;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
         }
 
         .ai-content {
-            background: rgba(255, 255, 255, 0.7);
-            padding: 20px;
-            border-radius: 12px;
-            line-height: 1.8;
+            background: rgba(255, 255, 255, 0.75);
+            padding: 24px;
+            border-radius: 14px;
+            line-height: 1.9;
             color: var(--gray-800);
+            font-weight: 500;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
         }
 
         .ai-loading {
             display: flex;
             align-items: center;
-            gap: 12px;
-            color: var(--gray-600);
+            gap: 14px;
+            color: var(--gray-700);
+            font-weight: 600;
         }
 
         .ai-loading-dots {
             display: flex;
-            gap: 6px;
+            gap: 7px;
         }
 
         .ai-loading-dot {
-            width: 8px;
-            height: 8px;
+            width: 9px;
+            height: 9px;
             background: var(--primary);
             border-radius: 50%;
             animation: bounce 1.4s infinite ease-in-out both;
@@ -832,37 +874,32 @@
         .ai-loading-dot:nth-child(1) { animation-delay: -0.32s; }
         .ai-loading-dot:nth-child(2) { animation-delay: -0.16s; }
 
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
-        }
-
         @media (max-width: 768px) {
             h1 {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
 
             .card {
-                padding: 24px;
+                padding: 28px;
             }
 
             .score-circle-container {
-                width: 180px;
-                height: 180px;
+                width: 200px;
+                height: 200px;
             }
 
             .score-circle {
-                width: 180px;
-                height: 180px;
+                width: 200px;
+                height: 200px;
             }
 
             .score-circle::before {
-                width: 150px;
-                height: 150px;
+                width: 170px;
+                height: 170px;
             }
 
             .score-value {
-                font-size: 2.8rem;
+                font-size: 3.2rem;
             }
 
             .action-buttons {
@@ -880,17 +917,18 @@
         }
 
         .error-message {
-            background: rgba(255, 59, 48, 0.1);
-            color: #B71C1C;
-            padding: 20px;
+            background: rgba(239, 68, 68, 0.12);
+            color: #991B1B;
+            padding: 22px;
             border-radius: 12px;
             margin-bottom: 20px;
             display: none;
-            border-left: 4px solid var(--danger);
+            border-left: 5px solid var(--danger);
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 14px;
             backdrop-filter: blur(10px);
+            font-weight: 600;
         }
 
         @media print {
@@ -901,6 +939,17 @@
                 display: none;
             }
         }
+
+        /* Enhanced Section Heading Styles */
+        .section-heading {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 24px;
+            color: var(--gray-900);
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
     </style>
 </head>
 <body>
@@ -908,21 +957,21 @@
     <div class="container">
         <header>
             <h1>
-                <span class="header-icon"><i data-lucide="target" width="48" height="48"></i></span>
+                <span class="header-icon"><i data-lucide="target" width="52" height="52"></i></span>
                 ATS-Friendly CV Analyzer
             </h1>
-            <p class="subtitle">Optimize your resume for Applicant Tracking Systems with AI-powered insights</p>
+            <p class="subtitle">Professional Resume Optimization with AI-Powered Insights</p>
         </header>
 
         <div class="card" id="uploadCard">
             <div class="error-message" id="errorMessage">
-                <i data-lucide="alert-circle" width="24" height="24"></i>
+                <i data-lucide="alert-circle" width="26" height="26"></i>
                 <span id="errorText"></span>
             </div>
             
             <div class="upload-area" id="uploadArea">
                 <div class="upload-icon-container">
-                    <i data-lucide="file-up" width="80" height="80" stroke-width="1.5" color="#667eea"></i>
+                    <i data-lucide="file-up" width="84" height="84" stroke-width="1.5" color="#2563EB"></i>
                 </div>
                 <div class="upload-text">Drop your CV here or click to browse</div>
                 <div class="upload-hint">Supports PDF and DOCX files (max 5MB)</div>
@@ -931,15 +980,17 @@
 
             <div class="job-description-section">
                 <h3>
-                    <i data-lucide="briefcase" width="24" height="24"></i>
-                    Job Description (Optional but Recommended)
+                    <i data-lucide="briefcase" width="26" height="26"></i>
+                    Job Description (Highly Recommended)
                 </h3>
-                <textarea id="jobDescription" placeholder="Paste the job description here for better keyword matching and personalized AI recommendations..."></textarea>
+                <textarea id="jobDescription" placeholder="Paste the complete job description here for accurate keyword matching and personalized AI recommendations...
+
+Including the job description significantly improves keyword analysis accuracy!"></textarea>
             </div>
 
-            <div style="text-align: center; margin-top: 32px;">
+            <div style="text-align: center; margin-top: 36px;">
                 <button class="btn" id="analyzeBtn" disabled>
-                    <i data-lucide="sparkles" width="20" height="20"></i>
+                    <i data-lucide="sparkles" width="22" height="22"></i>
                     <span>Analyze CV with AI</span>
                 </button>
             </div>
@@ -959,7 +1010,7 @@
                 <div class="score-circle-container">
                     <div class="score-circle" id="scoreCircle">
                         <div class="score-icon-bg">
-                            <i data-lucide="award" width="32" height="32" color="#667eea" opacity="0.3"></i>
+                            <i data-lucide="award" width="36" height="36" color="#2563EB" opacity="0.3"></i>
                         </div>
                         <div class="score-value" id="scoreValue">0</div>
                         <div class="score-label">ATS Score</div>
@@ -969,7 +1020,7 @@
 
                 <div class="chart-container">
                     <h3>
-                        <i data-lucide="bar-chart-3" width="24" height="24"></i>
+                        <i data-lucide="bar-chart-3" width="26" height="26"></i>
                         Performance Overview
                     </h3>
                     <canvas id="performanceChart" height="80"></canvas>
@@ -979,14 +1030,14 @@
 
                 <div class="ai-analysis-section" id="aiAnalysisSection">
                     <div class="ai-analysis-header">
-                        <i data-lucide="sparkles" width="28" height="28" color="#667eea"></i>
-                        <h3>AI-Powered Insights</h3>
+                        <i data-lucide="sparkles" width="30" height="30" color="#2563EB"></i>
+                        <h3>AI-Powered Career Insights</h3>
                         <span class="ai-badge">AI</span>
                     </div>
                     <div class="ai-content" id="aiAnalysisContent">
                         <div class="ai-loading">
-                            <i data-lucide="cpu" width="20" height="20"></i>
-                            <span>Generating personalized insights...</span>
+                            <i data-lucide="cpu" width="22" height="22"></i>
+                            <span>Generating personalized career insights...</span>
                             <div class="ai-loading-dots">
                                 <div class="ai-loading-dot"></div>
                                 <div class="ai-loading-dot"></div>
@@ -997,16 +1048,16 @@
                 </div>
 
                 <div class="section-analysis" id="sectionAnalysis">
-                    <h2 style="margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
-                        <i data-lucide="layout" width="28" height="28"></i>
+                    <h2 class="section-heading">
+                        <i data-lucide="layout" width="30" height="30"></i>
                         Section-by-Section Analysis
                     </h2>
                     <div id="sectionCards"></div>
                 </div>
 
                 <div class="keyword-analysis" id="keywordAnalysis">
-                    <h2 style="margin-bottom: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px;">
-                        <i data-lucide="key" width="28" height="28"></i>
+                    <h2 class="section-heading">
+                        <i data-lucide="key" width="30" height="30"></i>
                         Keyword Analysis
                     </h2>
                     <div id="keywordContent"></div>
@@ -1014,7 +1065,7 @@
 
                 <div class="tip-box">
                     <h4>
-                        <i data-lucide="lightbulb" width="24" height="24"></i>
+                        <i data-lucide="lightbulb" width="26" height="26"></i>
                         Quick Tips to Improve Your Score
                     </h4>
                     <ul class="tip-list" id="quickTips"></ul>
@@ -1022,11 +1073,11 @@
 
                 <div class="action-buttons">
                     <button class="btn" onclick="location.reload()">
-                        <i data-lucide="refresh-cw" width="20" height="20"></i>
+                        <i data-lucide="refresh-cw" width="22" height="22"></i>
                         <span>Analyze Another CV</span>
                     </button>
                     <button class="btn btn-secondary" onclick="window.print()">
-                        <i data-lucide="download" width="20" height="20"></i>
+                        <i data-lucide="download" width="22" height="22"></i>
                         <span>Save Report</span>
                     </button>
                 </div>
@@ -1058,11 +1109,24 @@
             parsing: 10
         };
 
-        // Common ATS-friendly keywords by category
+        // ENHANCED: More comprehensive ATS keywords by category
         const COMMON_KEYWORDS = {
-            technical: ['JavaScript', 'Python', 'Java', 'React', 'Node.js', 'SQL', 'AWS', 'Docker', 'Git', 'API', 'Agile', 'REST', 'TypeScript', 'MongoDB', 'PostgreSQL'],
-            soft_skills: ['leadership', 'communication', 'teamwork', 'problem-solving', 'analytical', 'project management', 'collaboration', 'adaptability'],
-            action_verbs: ['developed', 'managed', 'led', 'implemented', 'designed', 'created', 'improved', 'optimized', 'launched', 'analyzed']
+            technical: [
+                'JavaScript', 'Python', 'Java', 'React', 'Node.js', 'SQL', 'AWS', 'Docker', 'Git', 'API', 
+                'Agile', 'REST', 'TypeScript', 'MongoDB', 'PostgreSQL', 'Azure', 'Kubernetes', 'CI/CD',
+                'HTML', 'CSS', 'Angular', 'Vue', 'GraphQL', 'Jenkins', 'Terraform', 'Linux', 'MySQL'
+            ],
+            soft_skills: [
+                'leadership', 'communication', 'teamwork', 'problem-solving', 'analytical', 
+                'project management', 'collaboration', 'adaptability', 'critical thinking',
+                'strategic planning', 'time management', 'decision making', 'conflict resolution',
+                'mentoring', 'negotiation', 'presentation', 'customer service', 'multitasking'
+            ],
+            action_verbs: [
+                'developed', 'managed', 'led', 'implemented', 'designed', 'created', 'improved', 
+                'optimized', 'launched', 'analyzed', 'streamlined', 'spearheaded', 'coordinated',
+                'initiated', 'executed', 'delivered', 'architected', 'transformed', 'achieved'
+            ]
         };
 
         // DOM elements
@@ -1260,11 +1324,11 @@
             };
 
             const sectionKeywords = {
-                contact: /contact|email|phone|address/i,
-                summary: /summary|objective|profile|about/i,
-                experience: /experience|employment|work history|career/i,
-                education: /education|academic|degree|university|college/i,
-                skills: /skills|technical|competencies|expertise/i
+                contact: /contact|email|phone|address|linkedin|portfolio/i,
+                summary: /summary|objective|profile|about|professional summary|career objective/i,
+                experience: /experience|employment|work history|career|professional experience/i,
+                education: /education|academic|degree|university|college|certification/i,
+                skills: /skills|technical skills|competencies|expertise|proficiencies/i
             };
 
             for (const [section, regex] of Object.entries(sectionKeywords)) {
@@ -1278,13 +1342,13 @@
             let score = 100;
             const issues = [];
 
-            if (/\t{2,}/.test(text) || /\|/.test(text)) {
+            if (/\t{2,}/.test(text) || /\|{2,}/.test(text)) {
                 score -= 15;
                 issues.push({
                     category: 'formatting',
                     severity: 'high',
                     title: 'Tables Detected',
-                    description: 'Tables can confuse ATS systems and cause text to be read out of order',
+                    description: 'Complex tables can confuse ATS systems and cause text to be read out of order',
                     recommendation: 'Replace tables with bullet points and clear text formatting'
                 });
             }
@@ -1315,6 +1379,7 @@
             return { score: Math.max(0, score), issues };
         }
 
+        // ENHANCED: Better keyword extraction and matching
         function analyzeKeywords(text, jobDesc) {
             let score = 100;
             const issues = [];
@@ -1324,22 +1389,35 @@
             };
 
             let targetKeywords = [];
-            if (jobDesc) {
-                targetKeywords = extractKeywords(jobDesc);
+            
+            if (jobDesc && jobDesc.trim().length > 50) {
+                // Extract keywords from job description with better algorithm
+                targetKeywords = extractKeywordsAdvanced(jobDesc);
             } else {
-                targetKeywords = [...COMMON_KEYWORDS.technical, ...COMMON_KEYWORDS.soft_skills];
+                // Use expanded common keywords
+                targetKeywords = [
+                    ...COMMON_KEYWORDS.technical.slice(0, 15),
+                    ...COMMON_KEYWORDS.soft_skills.slice(0, 10)
+                ];
             }
 
+            // Normalize text for better matching
             const textLower = text.toLowerCase();
+            const textNormalized = textLower.replace(/[^\w\s]/g, ' ');
+            
             targetKeywords.forEach(keyword => {
-                if (textLower.includes(keyword.toLowerCase())) {
+                const keywordNormalized = keyword.toLowerCase().replace(/[^\w\s]/g, ' ');
+                
+                // Check for exact match or word boundary match
+                if (textNormalized.includes(keywordNormalized) || 
+                    new RegExp(`\\b${keywordNormalized.replace(/\s+/g, '\\s+')}\\b`, 'i').test(textLower)) {
                     keywords.matched.push(keyword);
                 } else {
                     keywords.missing.push(keyword);
                 }
             });
 
-            const matchRate = keywords.matched.length / targetKeywords.length;
+            const matchRate = targetKeywords.length > 0 ? keywords.matched.length / targetKeywords.length : 0;
             score = Math.round(matchRate * 100);
 
             if (matchRate < 0.3) {
@@ -1348,7 +1426,7 @@
                     severity: 'high',
                     title: 'Low Keyword Match',
                     description: `Only ${Math.round(matchRate * 100)}% of relevant keywords found in your CV`,
-                    recommendation: 'Add more role-specific keywords from the job description'
+                    recommendation: jobDesc ? 'Add more role-specific keywords from the job description' : 'Add a job description for better keyword analysis'
                 });
             } else if (matchRate < 0.6) {
                 issues.push({
@@ -1375,20 +1453,41 @@
             return { score: Math.max(0, score), issues, keywords };
         }
 
-        function extractKeywords(text) {
+        // ENHANCED: Better keyword extraction algorithm
+        function extractKeywordsAdvanced(text) {
+            // Remove common stop words
+            const stopWords = new Set(['the', 'and', 'for', 'with', 'this', 'that', 'from', 'will', 'have', 
+                                       'has', 'had', 'not', 'are', 'was', 'were', 'been', 'being', 'but',
+                                       'such', 'must', 'can', 'may', 'should', 'would', 'could', 'also',
+                                       'our', 'your', 'their', 'into', 'through', 'during', 'before', 'after']);
+            
             const words = text.toLowerCase()
                 .replace(/[^\w\s-]/g, ' ')
                 .split(/\s+/)
-                .filter(w => w.length > 3);
+                .filter(w => w.length > 2 && !stopWords.has(w));
             
+            // Extract multi-word phrases (2-3 words)
+            const phrases = [];
+            for (let i = 0; i < words.length - 1; i++) {
+                const twoWord = `${words[i]} ${words[i+1]}`;
+                if (twoWord.length > 6) phrases.push(twoWord);
+                
+                if (i < words.length - 2) {
+                    const threeWord = `${words[i]} ${words[i+1]} ${words[i+2]}`;
+                    if (threeWord.length > 10) phrases.push(threeWord);
+                }
+            }
+            
+            // Count frequency
             const frequency = {};
-            words.forEach(word => {
+            [...words, ...phrases].forEach(word => {
                 frequency[word] = (frequency[word] || 0) + 1;
             });
 
+            // Return top keywords/phrases
             return Object.entries(frequency)
                 .sort((a, b) => b[1] - a[1])
-                .slice(0, 20)
+                .slice(0, 25)
                 .map(([word]) => word);
         }
 
@@ -1428,7 +1527,7 @@
             let score = 100;
             const issues = [];
 
-            const bulletPoints = (text.match(/[•\-\*]/g) || []).length;
+            const bulletPoints = (text.match(/[•\-\*●]/g) || []).length;
             if (bulletPoints < 5) {
                 score -= 20;
                 issues.push({
@@ -1441,7 +1540,7 @@
             }
 
             const actionVerbCount = COMMON_KEYWORDS.action_verbs.filter(verb => 
-                text.toLowerCase().includes(verb)
+                new RegExp(`\\b${verb}\\b`, 'i').test(text)
             ).length;
             
             if (actionVerbCount < 3) {
@@ -1455,7 +1554,7 @@
                 });
             }
 
-            const numbers = text.match(/\d+%|\$\d+|(\d+\+)/g);
+            const numbers = text.match(/\d+%|\$\d+|(\d+\+)|\d+k/gi);
             if (!numbers || numbers.length < 3) {
                 score -= 10;
                 issues.push({
@@ -1518,72 +1617,92 @@
             return recommendations;
         }
 
-     async function generateAIInsights(analysis) {
-    const aiContent = document.getElementById('aiAnalysisContent');
-    
-    try {
-        const prompt = `As an expert career advisor and ATS specialist, analyze this CV data and provide personalized, actionable insights:
+        // ENHANCED: Better AI insights generation
+        async function generateAIInsights(analysis) {
+            const aiContent = document.getElementById('aiAnalysisContent');
+            
+            try {
+                // Create a more detailed prompt with context
+                const prompt = `As an expert ATS specialist and career advisor, provide detailed, actionable insights for this CV analysis:
 
-Overall ATS Score: ${analysis.overallScore}/100
-Category Scores:
-- Formatting: ${analysis.categoryScores.formatting}/100
-- Keywords: ${analysis.categoryScores.keywords}/100
-- Structure: ${analysis.categoryScores.structure}/100
-- Readability: ${analysis.categoryScores.readability}/100
+**Overall ATS Score:** ${analysis.overallScore}/100
 
-Issues Found: ${analysis.issues.length}
-Job Description Provided: ${state.jobDescription ? 'Yes' : 'No'}
+**Category Performance:**
+• Formatting & Layout: ${analysis.categoryScores.formatting}/100
+• Keyword Optimization: ${analysis.categoryScores.keywords}/100
+• Section Structure: ${analysis.categoryScores.structure}/100
+• Readability & Clarity: ${analysis.categoryScores.readability}/100
+• File Quality: ${analysis.categoryScores.parsing}/100
 
-Provide 3-4 specific, personalized recommendations to improve this CV's ATS compatibility. Focus on the weakest areas and provide concrete examples. Keep it concise and actionable.`;
+**Issues Identified:** ${analysis.issues.length} total issues
+- High Priority: ${analysis.issues.filter(i => i.severity === 'high').length}
+- Medium Priority: ${analysis.issues.filter(i => i.severity === 'medium').length}
+- Low Priority: ${analysis.issues.filter(i => i.severity === 'low').length}
 
-        // FIXED: Call the serverless function instead of Hugging Face directly
-        const response = await fetch('/api/ai-insights', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                prompt: prompt,
-                overallScore: analysis.overallScore,
-                categoryScores: analysis.categoryScores,
-                issuesCount: analysis.issues.length,
-                hasJobDescription: !!state.jobDescription
-            })
-        });
+**Job Description:** ${state.jobDescription ? 'Provided ✓' : 'Not provided ✗'}
 
-        if (!response.ok) {
-            throw new Error('AI API request failed');
+**Keywords Matched:** ${analysis.keywords.matched.length}/${analysis.keywords.matched.length + analysis.keywords.missing.length}
+
+Please provide:
+1. Executive summary of the CV's ATS readiness
+2. Top 3-4 specific, actionable recommendations prioritized by impact
+3. Concrete examples of how to implement each recommendation
+4. Expected impact on ATS score for each change
+
+Keep the tone professional, encouraging, and specific. Focus on the weakest areas first.`;
+
+                const response = await fetch('/api/ai-insights', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        prompt: prompt,
+                        overallScore: analysis.overallScore,
+                        categoryScores: analysis.categoryScores,
+                        issuesCount: analysis.issues.length,
+                        hasJobDescription: !!state.jobDescription
+                    })
+                });
+
+                if (!response.ok) {
+                    throw new Error('AI API request failed');
+                }
+
+                const data = await response.json();
+                
+                if (data.fallback) {
+                    aiContent.innerHTML = `
+                        <div style="display: flex; align-items: flex-start; gap: 14px; color: var(--gray-700);">
+                            <i data-lucide="info" width="22" height="22" style="margin-top: 2px; flex-shrink: 0;"></i>
+                            <div>
+                                <p style="font-weight: 700; margin-bottom: 8px;">AI insights are temporarily unavailable.</p>
+                                <p>Your comprehensive analysis is complete above with detailed scoring across all categories. Focus on the high-priority issues first for maximum impact.</p>
+                            </div>
+                        </div>
+                    `;
+                } else {
+                    const aiInsights = data.content;
+                    aiContent.innerHTML = `<div style="white-space: pre-wrap; line-height: 1.9;">${aiInsights}</div>`;
+                }
+                
+                lucide.createIcons();
+                
+            } catch (error) {
+                console.error('AI generation error:', error);
+                aiContent.innerHTML = `
+                    <div style="display: flex; align-items: flex-start; gap: 14px; color: var(--gray-700);">
+                        <i data-lucide="info" width="22" height="22" style="margin-top: 2px; flex-shrink: 0;"></i>
+                        <div>
+                            <p style="font-weight: 700; margin-bottom: 8px;">AI insights are temporarily unavailable.</p>
+                            <p>Your comprehensive analysis is complete above. Review the category breakdown and address high-priority issues first for best results.</p>
+                        </div>
+                    </div>
+                `;
+                lucide.createIcons();
+            }
         }
 
-        const data = await response.json();
-        
-        // Check if we got a fallback response
-        if (data.fallback) {
-            aiContent.innerHTML = `
-                <div style="display: flex; align-items: center; gap: 12px; color: var(--gray-600);">
-                    <i data-lucide="info" width="20" height="20"></i>
-                    <p>${data.message || 'AI insights are temporarily unavailable. The analysis above provides comprehensive feedback on your CV\'s ATS compatibility.'}</p>
-                </div>
-            `;
-        } else {
-            // Display the AI-generated insights
-            const aiInsights = data.content;
-            aiContent.innerHTML = `<p style="white-space: pre-wrap; line-height: 1.8;">${aiInsights}</p>`;
-        }
-        
-        lucide.createIcons();
-        
-    } catch (error) {
-        console.error('AI generation error:', error);
-        aiContent.innerHTML = `
-            <div style="display: flex; align-items: center; gap: 12px; color: var(--gray-600);">
-                <i data-lucide="info" width="20" height="20"></i>
-                <p>AI insights are temporarily unavailable. The analysis above provides comprehensive feedback on your CV's ATS compatibility.</p>
-            </div>
-        `;
-        lucide.createIcons();
-    }
-}
         function displayResults(analysis) {
             const scoreCircle = document.getElementById('scoreCircle');
             const scoreColor = getScoreColor(analysis.overallScore);
@@ -1593,7 +1712,7 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
             const ratingText = getRatingText(analysis.overallScore);
             const ratingIcon = getRatingIcon(analysis.overallScore);
             document.getElementById('scoreRating').innerHTML = `
-                <i data-lucide="${ratingIcon}" width="32" height="32"></i>
+                <i data-lucide="${ratingIcon}" width="36" height="36"></i>
                 <span>${ratingText}</span>
             `;
             document.getElementById('scoreRating').style.color = scoreColor;
@@ -1624,21 +1743,21 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                             categoryScores.parsing
                         ],
                         backgroundColor: [
-                            'rgba(0, 122, 255, 0.8)',
-                            'rgba(52, 199, 89, 0.8)',
-                            'rgba(255, 149, 0, 0.8)',
-                            'rgba(175, 82, 222, 0.8)',
-                            'rgba(255, 59, 48, 0.8)'
+                            'rgba(37, 99, 235, 0.85)',
+                            'rgba(16, 185, 129, 0.85)',
+                            'rgba(245, 158, 11, 0.85)',
+                            'rgba(139, 92, 246, 0.85)',
+                            'rgba(239, 68, 68, 0.85)'
                         ],
                         borderColor: [
-                            'rgba(0, 122, 255, 1)',
-                            'rgba(52, 199, 89, 1)',
-                            'rgba(255, 149, 0, 1)',
-                            'rgba(175, 82, 222, 1)',
-                            'rgba(255, 59, 48, 1)'
+                            'rgba(37, 99, 235, 1)',
+                            'rgba(16, 185, 129, 1)',
+                            'rgba(245, 158, 11, 1)',
+                            'rgba(139, 92, 246, 1)',
+                            'rgba(239, 68, 68, 1)'
                         ],
                         borderWidth: 2,
-                        borderRadius: 8
+                        borderRadius: 10
                     }]
                 },
                 options: {
@@ -1647,6 +1766,18 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                     plugins: {
                         legend: {
                             display: false
+                        },
+                        tooltip: {
+                            backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                            padding: 12,
+                            titleFont: {
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                size: 13
+                            },
+                            cornerRadius: 8
                         }
                     },
                     scales: {
@@ -1656,15 +1787,25 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                             ticks: {
                                 callback: function(value) {
                                     return value + '%';
+                                },
+                                font: {
+                                    size: 12,
+                                    weight: '600'
                                 }
                             },
                             grid: {
-                                color: 'rgba(0, 0, 0, 0.05)'
+                                color: 'rgba(0, 0, 0, 0.06)'
                             }
                         },
                         x: {
                             grid: {
                                 display: false
+                            },
+                            ticks: {
+                                font: {
+                                    size: 12,
+                                    weight: '600'
+                                }
                             }
                         }
                     }
@@ -1695,7 +1836,7 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                 categoryDiv.innerHTML = `
                     <div class="category-header">
                         <div class="category-name">
-                            <i data-lucide="${cat.icon}" width="20" height="20"></i>
+                            <i data-lucide="${cat.icon}" width="22" height="22"></i>
                             ${cat.name}
                         </div>
                         <div class="category-score" style="color: ${getScoreColor(score)}">${score}/100</div>
@@ -1708,18 +1849,18 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                             ${categoryIssues.map(issue => `
                                 <div class="issue">
                                     <div class="issue-title">
-                                        <i data-lucide="alert-triangle" width="16" height="16"></i>
+                                        <i data-lucide="alert-triangle" width="18" height="18"></i>
                                         ${issue.title}
                                     </div>
                                     <div class="issue-description">${issue.description}</div>
                                     <div class="issue-recommendation">
-                                        <i data-lucide="check-circle" width="16" height="16"></i>
+                                        <i data-lucide="check-circle" width="18" height="18"></i>
                                         ${issue.recommendation}
                                     </div>
                                 </div>
                             `).join('')}
                         </div>
-                    ` : '<div style="color: var(--success); margin-top: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px;"><i data-lucide="check-circle-2" width="18" height="18"></i> No issues detected</div>'}
+                    ` : '<div style="color: var(--success); margin-top: 14px; font-weight: 700; display: flex; align-items: center; gap: 10px;"><i data-lucide="check-circle-2" width="20" height="20"></i> No issues detected - Excellent!</div>'}
                 `;
                 
                 container.appendChild(categoryDiv);
@@ -1752,16 +1893,16 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                 sectionDiv.innerHTML = `
                     <div class="section-header">
                         <div class="section-title">
-                            <i data-lucide="${section.icon}" width="20" height="20"></i>
+                            <i data-lucide="${section.icon}" width="22" height="22"></i>
                             ${section.name}
                         </div>
                         <div class="section-status status-${status}">
-                            <i data-lucide="${statusIcon}" width="16" height="16"></i>
+                            <i data-lucide="${statusIcon}" width="18" height="18"></i>
                             ${statusText}
                         </div>
                     </div>
                     ${!found && ['experience', 'education', 'skills'].includes(section.key) ? 
-                        '<div style="color: var(--gray-600); font-size: 0.95rem; display: flex; align-items: center; gap: 8px;"><i data-lucide="info" width="16" height="16"></i> This section is required for most ATS systems</div>' : ''}
+                        '<div style="color: var(--gray-600); font-size: 0.95rem; display: flex; align-items: center; gap: 10px; margin-top: 8px;"><i data-lucide="info" width="18" height="18"></i> This section is required for most ATS systems</div>' : ''}
                 `;
                 
                 container.appendChild(sectionDiv);
@@ -1774,7 +1915,17 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
             const container = document.getElementById('keywordContent');
             
             if (analysis.keywords.matched.length === 0 && analysis.keywords.missing.length === 0) {
-                container.innerHTML = '<p style="color: var(--gray-600); display: flex; align-items: center; gap: 8px;"><i data-lucide="info" width="20" height="20"></i> Add a job description for detailed keyword analysis</p>';
+                container.innerHTML = `
+                    <div style="padding: 24px; background: rgba(245, 158, 11, 0.1); border-radius: 12px; border-left: 4px solid var(--warning);">
+                        <p style="color: var(--gray-800); display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 1.05rem;">
+                            <i data-lucide="alert-circle" width="24" height="24" color="#F59E0B"></i>
+                            <span>Add a job description for detailed keyword analysis</span>
+                        </p>
+                        <p style="color: var(--gray-600); margin-top: 12px; line-height: 1.6;">
+                            Including the job description will provide accurate keyword matching and significantly improve your analysis quality.
+                        </p>
+                    </div>
+                `;
                 lucide.createIcons();
                 return;
             }
@@ -1783,11 +1934,11 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                 ${analysis.keywords.matched.length > 0 ? `
                     <div class="keyword-section">
                         <h3>
-                            <i data-lucide="check-circle" width="24" height="24" color="#34C759"></i>
+                            <i data-lucide="check-circle" width="26" height="26" color="#10B981"></i>
                             Matched Keywords (${analysis.keywords.matched.length})
                         </h3>
                         <div class="keyword-tags">
-                            ${analysis.keywords.matched.slice(0, 15).map(kw => 
+                            ${analysis.keywords.matched.slice(0, 20).map(kw => 
                                 `<span class="keyword-tag keyword-matched">${kw}</span>`
                             ).join('')}
                         </div>
@@ -1797,17 +1948,17 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                 ${analysis.keywords.missing.length > 0 ? `
                     <div class="keyword-section">
                         <h3>
-                            <i data-lucide="alert-circle" width="24" height="24" color="#FF3B30"></i>
+                            <i data-lucide="alert-circle" width="26" height="26" color="#EF4444"></i>
                             Missing Keywords (${analysis.keywords.missing.length})
                         </h3>
                         <div class="keyword-tags">
-                            ${analysis.keywords.missing.slice(0, 15).map(kw => 
+                            ${analysis.keywords.missing.slice(0, 20).map(kw => 
                                 `<span class="keyword-tag keyword-missing">${kw}</span>`
                             ).join('')}
                         </div>
-                        <p style="color: var(--gray-600); margin-top: 16px; font-size: 0.95rem; display: flex; align-items: center; gap: 8px;">
-                            <i data-lucide="lightbulb" width="18" height="18"></i>
-                            Consider adding these relevant keywords if they match your experience
+                        <p style="color: var(--gray-600); margin-top: 18px; font-size: 0.95rem; display: flex; align-items: flex-start; gap: 10px; line-height: 1.7;">
+                            <i data-lucide="lightbulb" width="20" height="20" style="margin-top: 2px; flex-shrink: 0;" color="#F59E0B"></i>
+                            <span><strong>Pro Tip:</strong> Review these missing keywords and add relevant ones to your CV where they naturally fit your experience and skills.</span>
                         </p>
                     </div>
                 ` : ''}
@@ -1821,45 +1972,49 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
             const tips = [];
 
             if (analysis.overallScore < 60) {
-                tips.push('Use a simple, clean layout without tables or columns');
-                tips.push('Include standard section headings (Experience, Education, Skills)');
-                tips.push('Save as PDF or DOCX format');
+                tips.push('Use a simple, clean layout without tables or multi-column formats');
+                tips.push('Include all standard section headings (Experience, Education, Skills, Contact)');
+                tips.push('Save your CV as PDF or DOCX format for best compatibility');
             }
 
             if (analysis.categoryScores.keywords < 70) {
-                tips.push('Add more keywords from the job description');
-                tips.push('Use industry-standard terminology');
+                tips.push('Add more keywords from the job description throughout your CV');
+                tips.push('Use industry-standard terminology and technical skills');
+                tips.push('Include both acronyms and full terms (e.g., "AI" and "Artificial Intelligence")');
             }
 
             if (analysis.categoryScores.readability < 80) {
-                tips.push('Start bullet points with strong action verbs');
-                tips.push('Quantify your achievements with numbers and percentages');
+                tips.push('Start each bullet point with strong action verbs (developed, led, implemented)');
+                tips.push('Quantify your achievements with specific numbers and percentages');
+                tips.push('Keep bullet points concise and focused on results');
             }
 
             if (analysis.categoryScores.formatting < 80) {
-                tips.push('Remove tables, text boxes, and graphics');
-                tips.push('Use standard fonts (Arial, Calibri, Times New Roman)');
+                tips.push('Remove tables, text boxes, headers, and footers');
+                tips.push('Use standard fonts like Arial, Calibri, or Times New Roman');
+                tips.push('Maintain consistent formatting throughout the document');
             }
 
             if (tips.length === 0) {
-                tips.push('Your CV is well-optimized for ATS!');
-                tips.push('Consider tailoring it for each specific job application');
-                tips.push('Keep it updated with your latest achievements');
+                tips.push('Your CV is well-optimized for ATS! Great job!');
+                tips.push('Consider tailoring it specifically for each job application');
+                tips.push('Keep it updated with your latest achievements and skills');
+                tips.push('Have a trusted colleague review it for additional feedback');
             }
 
             container.innerHTML = tips.map(tip => `<li>${tip}</li>`).join('');
         }
 
         function getScoreColor(score) {
-            if (score >= 80) return '#34C759';
-            if (score >= 60) return '#FF9500';
-            return '#FF3B30';
+            if (score >= 80) return '#10B981';
+            if (score >= 60) return '#F59E0B';
+            return '#EF4444';
         }
 
         function getRatingText(score) {
-            if (score >= 80) return 'Excellent - ATS-Friendly';
+            if (score >= 80) return 'Excellent - ATS-Optimized';
             if (score >= 60) return 'Good - Needs Improvement';
-            return 'Poor - High Rejection Risk';
+            return 'Needs Work - High Rejection Risk';
         }
 
         function getRatingIcon(score) {
@@ -1871,7 +2026,7 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
         function animateScore(targetScore) {
             const scoreElement = document.getElementById('scoreValue');
             let currentScore = 0;
-            const increment = targetScore / 50;
+            const increment = targetScore / 60;
             const timer = setInterval(() => {
                 currentScore += increment;
                 if (currentScore >= targetScore) {
@@ -1879,7 +2034,7 @@ Provide 3-4 specific, personalized recommendations to improve this CV's ATS comp
                     clearInterval(timer);
                 }
                 scoreElement.textContent = Math.round(currentScore);
-            }, 20);
+            }, 16);
         }
     </script>
 </body>
