@@ -1,0 +1,34 @@
+{
+  "name": "ats-cv-analyzer",
+  "version": "1.0.0",
+  "description": "AI-powered ATS-friendly CV analyzer with beautiful UI",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "deploy": "vercel",
+    "deploy:prod": "vercel --prod"
+  },
+  "keywords": [
+    "ats",
+    "cv",
+    "resume",
+    "analyzer",
+    "ai",
+    "career",
+    "job-search",
+    "recruitment"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/yourusername/ats-cv-analyzer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yourusername/ats-cv-analyzer/issues"
+  },
+  "homepage": "https://github.com/yourusername/ats-cv-analyzer#readme",
+  "devDependencies": {
+    "vercel": "^33.0.0"
+  }
+}
