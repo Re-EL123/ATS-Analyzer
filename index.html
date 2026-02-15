@@ -1518,11 +1518,11 @@
             return recommendations;
         }
 
-        async function generateAIInsights(analysis) {
-            const aiContent = document.getElementById('aiAnalysisContent');
-            
-            try {
-                const prompt = `As an expert career advisor and ATS specialist, analyze this CV data and provide personalized, actionable insights:
+     async function generateAIInsights(analysis) {
+    const aiContent = document.getElementById('aiAnalysisContent');
+    
+    try {
+        const prompt = `As an expert career advisor and ATS specialist, analyze this CV data and provide personalized, actionable insights:
 
 Overall ATS Score: ${analysis.overallScore}/100
 Category Scores:
@@ -1536,45 +1536,54 @@ Job Description Provided: ${state.jobDescription ? 'Yes' : 'No'}
 
 Provide 3-4 specific, personalized recommendations to improve this CV's ATS compatibility. Focus on the weakest areas and provide concrete examples. Keep it concise and actionable.`;
 
-                const response = await fetch('https://router.huggingface.co/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'Bearer hf_YOUR_TOKEN_HERE' // Replace with actual token
-                    },
-                    body: JSON.stringify({
-                        model: 'deepseek-ai/DeepSeek-V3.2-Exp:novita',
-                        messages: [
-                            {
-                                role: 'user',
-                                content: prompt
-                            }
-                        ],
-                        max_tokens: 500
-                    })
-                });
+        // FIXED: Call the serverless function instead of Hugging Face directly
+        const response = await fetch('/api/ai-insights', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                prompt: prompt,
+                overallScore: analysis.overallScore,
+                categoryScores: analysis.categoryScores,
+                issuesCount: analysis.issues.length,
+                hasJobDescription: !!state.jobDescription
+            })
+        });
 
-                if (!response.ok) {
-                    throw new Error('AI API request failed');
-                }
-
-                const data = await response.json();
-                const aiInsights = data.choices[0].message.content;
-
-                aiContent.innerHTML = `<p style="white-space: pre-wrap;">${aiInsights}</p>`;
-                
-            } catch (error) {
-                console.error('AI generation error:', error);
-                aiContent.innerHTML = `
-                    <div style="display: flex; align-items: center; gap: 12px; color: var(--gray-600);">
-                        <i data-lucide="info" width="20" height="20"></i>
-                        <p>AI insights are temporarily unavailable. The analysis above provides comprehensive feedback on your CV's ATS compatibility.</p>
-                    </div>
-                `;
-                lucide.createIcons();
-            }
+        if (!response.ok) {
+            throw new Error('AI API request failed');
         }
 
+        const data = await response.json();
+        
+        // Check if we got a fallback response
+        if (data.fallback) {
+            aiContent.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px; color: var(--gray-600);">
+                    <i data-lucide="info" width="20" height="20"></i>
+                    <p>${data.message || 'AI insights are temporarily unavailable. The analysis above provides comprehensive feedback on your CV\'s ATS compatibility.'}</p>
+                </div>
+            `;
+        } else {
+            // Display the AI-generated insights
+            const aiInsights = data.content;
+            aiContent.innerHTML = `<p style="white-space: pre-wrap; line-height: 1.8;">${aiInsights}</p>`;
+        }
+        
+        lucide.createIcons();
+        
+    } catch (error) {
+        console.error('AI generation error:', error);
+        aiContent.innerHTML = `
+            <div style="display: flex; align-items: center; gap: 12px; color: var(--gray-600);">
+                <i data-lucide="info" width="20" height="20"></i>
+                <p>AI insights are temporarily unavailable. The analysis above provides comprehensive feedback on your CV's ATS compatibility.</p>
+            </div>
+        `;
+        lucide.createIcons();
+    }
+}
         function displayResults(analysis) {
             const scoreCircle = document.getElementById('scoreCircle');
             const scoreColor = getScoreColor(analysis.overallScore);
