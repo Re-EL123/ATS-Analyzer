@@ -1,18 +1,9 @@
 {
-  "version": 2,
-  "name": "ats-cv-analyzer",
-  "builds": [
-    {
-      "src": "index.html",
-      "use": "@vercel/static"
+  "functions": {
+    "api/**/*.js": {
+      "runtime": "nodejs20.x"
     }
-  ],
-  "routes": [
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ],
+  },
   "headers": [
     {
       "source": "/(.*)",
